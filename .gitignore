@@ -1,0 +1,10 @@
+.Rproj.user
+.Rhistory
+.Rdata
+.httr-oauth
+.DS_Store
+.quarto
+_extensions/tufte/typst-template.pdf
+/template_files
+template.typ
+short_ref.csl

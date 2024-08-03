@@ -1,0 +1,33 @@
+title: tufte
+author: Christopher T. Kenny
+version: 1.0.0
+quarto-required: ">=1.5.0"
+contributes:
+  formats:
+    typst:
+      template-partials:
+        - typst-template.typ
+        - typst-show.typ
+        - biblio.typ
+        - definitions.typ
+      format-resources:
+        - short_ref.csl
+      filters:
+        - typst-function
+      date: last-modified
+      date-format: "MMMM DD, YYYY"
+      margin:
+        left: 1in
+        right: 3.5in
+        top: 1.5in
+        bottom: 1.5in
+      mainfont:
+        - Lucida Bright
+        - New CM
+        - Linux Libertine
+      codefont:
+        - Lucida Console
+      sansfont:
+        - Gill Sans MT
+        - TeX Gyre Heros
+        - Noto Sans
