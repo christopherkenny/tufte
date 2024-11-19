@@ -1,5 +1,30 @@
 #let wideblock(content) = block(width: 100% + 2.5in, content)
 
+#let colorize-first-chars(content, color) = {
+  let text-str = to-string(content)
+  let words = text-str.split(" ")
+  let result = ()
+
+  for (i, word) in words.enumerate() {
+    if word.len() > 0 {
+      if i == 0 {  // 只处理第一个词
+        let first-char = word.at(0)
+        result += ([
+          #text(fill: color)[#first-char]#word.slice(1)
+        ],)
+      } else {
+        result += ([#word],)
+      }
+
+      if i < words.len() - 1 {
+        result += ([ ],)
+      }
+    }
+  }
+
+  result.join()
+}
+
 #let tufte(
   title: none,
   subtitle: none,
@@ -27,6 +52,7 @@
   footer-content: none,
   distribution: none,
   external-link-circle: true,
+  theme-color: rgb("#962323"),
   doc,
 ) = {
 
@@ -75,10 +101,11 @@
   show figure.where(kind: raw): set figure.caption(position: top)
   show figure.where(kind: raw): set figure(supplement: [Code], numbering: "1")
   show figure.where(kind: table): set table(
-    inset: 8pt,
-    stroke: 0.4pt + rgb(220,220,220),
-    align: center
+    align: center,
+    stroke: 0.4pt + rgb(200,200,200),
+    inset: (x: 10pt, y: 8pt)
   )
+
   show raw: set text(
     font: codefont,
     size: 9pt,
@@ -95,7 +122,7 @@
       sym.wj
       h(1.6pt)
       sym.wj
-      super(box(height: 3.8pt, circle(radius: 1.2pt, stroke: 0.7pt + rgb("#336fa3"))))
+      super(box(height: 3.8pt, circle(radius: 1.2pt, stroke: 0.7pt + theme-color)))
     }
   }
 
@@ -112,41 +139,55 @@
   show list: set par(justify: false)
 
   // Headings
-  set heading(numbering: none)
+  show heading: set text()
   show heading.where(level: 1): it => {
-    v(2em, weak: true)
-    text(
-      size: 16pt,
-      weight: "bold",
-      tracking: 0.6pt,
-      font: sansfont,
-      it
+    set par(first-line-indent: 0pt)  // 移除首行缩进
+    block(
+      width: 100%,    // 确保完整宽度
+      {
+        v(2em, weak: true)
+        text(
+          size: 16pt,
+          weight: "bold",
+          tracking: 0.6pt,
+          font: sansfont
+        )[#colorize-first-chars(it, theme-color)]
+        v(1em, weak: true)
+      }
     )
-    line(length: 100%, stroke: 0.3pt + luma(180))
-    v(1em, weak: true)
   }
 
   show heading.where(level: 2): it => {
-    v(1.2em, weak: true)
-    text(
-      size: 14pt,
-      weight: "medium",
-      style: "italic",
-      tracking: 0.3pt,
-      it
+    set par(first-line-indent: 0pt)
+    block(
+      width: 100%,
+      {
+        v(1.2em, weak: true)
+        text(
+          size: 14pt,
+          weight: "medium",
+          style: "italic",
+          tracking: 0.3pt
+        )[#colorize-first-chars(it, theme-color)]
+        v(0.8em, weak: true)
+      }
     )
-    v(0.8em, weak: true)
   }
 
   show heading.where(level: 3): it => {
-    v(0.8em, weak: true)
-    text(
-      size: 11pt,
-      style: "italic",
-      weight: "thin",
-      it
+    set par(first-line-indent: 0pt)
+    block(
+      width: 100%,
+      {
+        v(0.8em, weak: true)
+        text(
+          size: 11pt,
+          style: "italic",
+          weight: "thin"
+        )[#colorize-first-chars(it, theme-color)]
+        v(0.5em, weak: true)
+      }
     )
-    v(0.5em, weak: true)
   }
 
   // show heading: it => {
@@ -166,23 +207,38 @@
     ),
     header: context {
       if counter(page).get().first() > 1 {
-        set text(font: sansfont, size: 9pt, weight: "medium")
+        let header-color = if theme-color != none { theme-color } else { default-theme-color }
+
         block(
           width: 100% + 3.5in - 1in,
+          inset: (y: 8pt),
           {
-            smallcaps(
-              if shorttitle != none { shorttitle }
-              else { title }
+            grid(
+              columns: (1fr, auto),
+              gutter: 1em,
+              {
+                // 左侧标题
+                let title-text = if shorttitle != none { shorttitle } else { title }
+                text(
+                  font: sansfont,
+                  size: 9.5pt,
+                  weight: "medium",
+                  tracking: 0.3pt,
+                )[#colorize-first-chars(title-text, header-color)]
+              },
+              {
+                // 右侧页码
+                text(
+                  font: sansfont,
+                  size: 8.5pt,
+                  fill: rgb(100,100,100)
+                )[#counter(page).display()]
+              }
             )
-            h(1fr)
-            if publisher != none {
-              smallcaps(publisher)
-            }
-          },
+          }
         )
       }
     },
-
     footer: context {
       set text(font: sansfont, size: 8pt, fill: luma(100))
       block(
@@ -208,16 +264,20 @@
         hyphenate: false,
         size: 20pt,
         font: sansfont,
-        weight: "bold",      )
+        weight: "bold"
+      )
       set par(
         justify: false,
         leading: 0.35em,
         first-line-indent: 0pt,
       )
-      upper(title)
-      set text(size: fontsize)
-      v(-0.65em)
-      upper(subtitle)
+      colorize-first-chars(title, theme-color)
+
+      if subtitle != none {
+        set text(size: fontsize)
+        v(-0.65em)
+        colorize-first-chars(subtitle, theme-color)
+      }
     })
   }
 
@@ -235,14 +295,14 @@
           ..slice.map(author => align(
             left,
             {
-              upper(author.name)
+              colorize-first-chars(author.name, theme-color)
               if "university" in author [
                 \ #author.university
               ]
               if "email" in author [
                 \ #to-string(author.email)
               ]
-            },
+            }
           ))
         )
 
@@ -253,24 +313,36 @@
     })
   }
 
+  // 日期处理部分
   if date != none {
     wideblock({
       set text(font: sansfont, size: 10pt)
       v(1em)
-      upper(date)
+
+      // 格式化日期
+      let formatted-date = {
+        let month = datetime.today().display("[month repr:long]")
+        let day = str(datetime.today().day())
+        let year = str(datetime.today().year())
+        [#month #day, #year]
+      }
+
+      // 应用首字母着色
+      colorize-first-chars(formatted-date, theme-color)
     })
-    linebreak()
-    if document-number != none {
-      document-number
-    }
   }
 
   if abstract != none {
     wideblock({
       set text(font: sansfont)
-      set par(hanging-indent: 3em)
-      h(3em)
-      abstract
+      let abs-text = to-string(abstract)
+      let words = abs-text.split(" ")
+
+      if words.len() > 0 {
+        colorize-first-chars(abstract, theme-color)
+      } else {
+        abstract
+      }
     })
   }
 
@@ -303,6 +375,8 @@
   )
 
   show cite.where(form: "prose"): notecite
+
+
 
   doc
 

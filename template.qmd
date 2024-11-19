@@ -182,38 +182,16 @@ And an ordered list:
 
 Here's an inline equation: $E = mc^2$
 
-And a display equation:
+And a display equation:[
+  $$
+  \frac{\partial f}{\partial x} = \lim_{h \to 0} \frac{f(x + h) - f(x)}{h}
+  $$
+  ]{.note}
 
-$$
-\frac{\partial f}{\partial x} = \lim_{h \to 0} \frac{f(x + h) - f(x)}{h}
-$$
 
-## Citations
-
-We use the standard pandoc citation syntax here.
 
 ## External links
 
 'Ilm adds a small maroon circle to external (outgoing) links.
 
 Test link: [Quarto](https://quarto.org)
-
-# Unsupported Features
-
-- [ ] Blockquotes
-
-
-## Blockquotes
-
-Typst 'Ilm support a totally different style for blockquotes. This feature is not supported in Quarto now.
-
-Test blockquote:
-
-> This is a blockquote.
-
-We just suggest you to use the default Quarto blockquote style, or callout blocks for special notes.
-
-::: {.callout-note}
-Note that there are five types of callouts, including:
-`note`, `warning`, `important`, `tip`, and `caution`.
-:::
