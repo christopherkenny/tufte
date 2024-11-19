@@ -21,13 +21,19 @@ contributes:
         right: 3.5in
         top: 1.5in
         bottom: 1.5in
+      # _extension.yml
       mainfont:
-        - Lucida Bright
-        - New CM
-        - Linux Libertine
-      codefont:
-        - Lucida Console
+        - Harding Text Web      # 更优雅的衬线字体
+        - Palatino
+        - New Computer Modern
       sansfont:
-        - Gill Sans MT
-        - TeX Gyre Heros
-        - Noto Sans
+        - Harding Text Web
+        - Gill Sans Nova
+        - Source Sans Pro
+      codefont:
+        - Fira Code
+        - JetBrains Mono
+      header-font:         # 新增页眉专用字体
+        - Harding Text Web
+        - Trajan Pro
+        - Perpetua Titling MT

@@ -14,10 +14,10 @@
   paper: "us-letter",
   lang: "en",
   region: "US",
-  font: (),
-  fontsize: 11pt,
-  codefont: "DejaVu Sans Mono",
-  sansfont: "Gill Sans MT",
+  font: "New Computer Modern", // 更具学术感的字体
+  sansfont: "Optima Nova", // 更优雅的无衬线字体
+  codefont: "JetBrains Mono", // 更精致的等宽字体
+  fontsize: 10pt, // 略微减小正文字号
   sectionnumbering: none,
   toc: false,
   toc_title: none,
@@ -26,6 +26,7 @@
   draft: false,
   footer-content: none,
   distribution: none,
+  external-link-circle: true,
   doc,
 ) = {
 
@@ -40,12 +41,22 @@
   }
 
   // Just a suttle lightness to decrease the harsh contrast
-  set text(fill: luma(30))
+  set text(
+    fill: luma(30), // 借鉴第二个模板的文字颜色
+    historical-ligatures: true, // 优雅的连字
+    tracking: 0.3pt // 微调字距
+  )
+
 
   // Tables and figures
-  show figure: set figure.caption(separator: [.#h(0.5em)])
+  show figure: set figure.caption(separator: [.#h(0.3em)])
   show figure.caption: set align(left)
-  show figure.caption: set text(font: sansfont)
+  show figure.caption: set text(
+    font: sansfont,
+    size: 8.5pt,
+    style: "italic",
+    fill: luma(50)
+  )
 
   show figure.where(kind: table): set figure.caption(position: top)
   show figure.where(kind: table): set figure(numbering: "I")
@@ -53,7 +64,7 @@
   show figure.where(kind: "quarto-float-tbl"): set figure(numbering: "I")
 
   show figure.where(kind: image): set figure(
-    supplement: [Figure],
+    supplement: [Fig.],
     numbering: "1",
   )
   show figure.where(kind: "quarto-float-fig"): set figure(
@@ -63,44 +74,79 @@
 
   show figure.where(kind: raw): set figure.caption(position: top)
   show figure.where(kind: raw): set figure(supplement: [Code], numbering: "1")
-  show raw: set text(font: "Lucida Console", size: 10pt)
-
+  show figure.where(kind: table): set table(
+    inset: 8pt,
+    stroke: 0.4pt + rgb(220,220,220),
+    align: center
+  )
+  show raw: set text(
+    font: codefont,
+    size: 9pt,
+    ligatures: false
+  )
   // Equations
   set math.equation(numbering: "(1)")
-  show math.equation: set block(spacing: 0.65em)
+  show math.equation: set block(spacing: 0.5em)
 
-  show link: underline
+  show link: it => {
+    it
+    // Workaround for ctheorems package so that its labels keep the default link styling.
+    if external-link-circle and type(it.dest) != label  {
+      sym.wj
+      h(1.6pt)
+      sym.wj
+      super(box(height: 3.8pt, circle(radius: 1.2pt, stroke: 0.7pt + rgb("#336fa3"))))
+    }
+  }
 
   // Lists
   set enum(
-    indent: 1em,
-    body-indent: 1em,
+    indent: 0.8em,
+    body-indent: 0.8em,
   )
-  show enum: set par(justify: false)
   set list(
-    indent: 1em,
-    body-indent: 1em,
+    indent: 0.8em,
+    body-indent: 0.8em,
   )
+
   show list: set par(justify: false)
 
   // Headings
   set heading(numbering: none)
   show heading.where(level: 1): it => {
     v(2em, weak: true)
-    text(size: 14pt, weight: "bold", it)
+    text(
+      size: 16pt,
+      weight: "bold",
+      tracking: 0.6pt,
+      font: sansfont,
+      it
+    )
+    line(length: 100%, stroke: 0.3pt + luma(180))
     v(1em, weak: true)
   }
 
   show heading.where(level: 2): it => {
-    v(1.3em, weak: true)
-    text(size: 13pt, weight: "regular", style: "italic", it)
-    v(1em, weak: true)
+    v(1.2em, weak: true)
+    text(
+      size: 14pt,
+      weight: "medium",
+      style: "italic",
+      tracking: 0.3pt,
+      it
+    )
+    v(0.8em, weak: true)
   }
 
   show heading.where(level: 3): it => {
-    v(1em, weak: true)
-    text(size: fontsize, style: "italic", weight: "thin", it)
-    v(0.65em, weak: true)
+    v(0.8em, weak: true)
+    text(
+      size: 11pt,
+      style: "italic",
+      weight: "thin",
+      it
+    )
+    v(0.5em, weak: true)
   }
 
   // show heading: it => {
@@ -111,7 +157,7 @@
 
   // Page setup
   set page(
-    paper: "us-letter",
+    paper: paper,
     margin: (
       left: 1in,
       right: 3.5in,
@@ -119,82 +165,40 @@
       bottom: 1.5in,
     ),
     header: context {
-      set text(font: sansfont)
-      block(
-        width: 100% + 3.5in - 1in,
-        {
-          if counter(page).get().first() > 1 {
-            if document-number != none {
-              document-number
-            }
+      if counter(page).get().first() > 1 {
+        set text(font: sansfont, size: 9pt, weight: "medium")
+        block(
+          width: 100% + 3.5in - 1in,
+          {
+            smallcaps(
+              if shorttitle != none { shorttitle }
+              else { title }
+            )
             h(1fr)
-            if shorttitle != none {
-              upper(shorttitle)
-            } else {
-              upper(title)
-            }
             if publisher != none {
-              linebreak()
-              h(1fr)
-              upper(publisher)
+              smallcaps(publisher)
             }
-          }
-        },
-      )
+          },
+        )
+      }
     },
+
     footer: context {
-      set text(font: sansfont, size: 8pt)
+      set text(font: sansfont, size: 8pt, fill: luma(100))
       block(
         width: 100% + 3.5in - 1in,
-        {
-          if counter(page).get().first() == 1 {
-            if type(footer-content) == array {
-              footer-content.at(0)
-              linebreak()
-            } else {
-              footer-content
-              linebreak()
-            }
-            if draft [
-              Draft document, #date.
-            ]
-            if distribution != none [
-              Distribution limited to #distribution.
-            ]
-          } else {
-            if type(footer-content) == array {
-              footer-content.at(1)
-              linebreak()
-            } else {
-              footer-content
-              linebreak()
-            }
-            if draft [
-              Draft document, #date.
-            ]
-            if distribution != none [
-              Distribution limited to #distribution.
-            ]
-            linebreak()
-            [Page #counter(page).display()]
-          }
-        },
+        align(right)[#counter(page).display()]
       )
-    },
-    background: if draft {
-      rotate(
-        45deg,
-        text(font: sansfont, size: 200pt, fill: rgb("FFEEEE"))[DRAFT],
-      )
-    },
+    }
   )
 
   set par(
-    // justify: true,
-    leading: 0.65em,
+    leading: 0.7em,
+    justify: true,
     first-line-indent: 1em
   )
-  show par: set block(spacing: 0.65em)
+  show par: set block(spacing: 0.6em)
+
 
 
   // frontmatter
@@ -204,10 +208,10 @@
         hyphenate: false,
         size: 20pt,
         font: sansfont,
-      )
+        weight: "bold",      )
       set par(
         justify: false,
-        leading: 0.2em,
+        leading: 0.35em,
         first-line-indent: 0pt,
       )
       upper(title)
@@ -219,7 +223,7 @@
 
   if authors != none {
     wideblock({
-      set text(font: sansfont, size: fontsize)
+      set text(font: sansfont, size: 10pt)
       v(1em)
       for i in range(calc.ceil(authors.len() / 3)) {
         let end = calc.min((i + 1) * 3, authors.len())
@@ -250,7 +254,11 @@
   }
 
   if date != none {
-    upper(date)
+    wideblock({
+      set text(font: sansfont, size: 10pt)
+      v(1em)
+      upper(date)
+    })
     linebreak()
     if document-number != none {
       document-number
@@ -301,6 +309,6 @@
 }
 
 #set table(
-  inset: 6pt,
-  stroke: none,
+  inset: 5pt,
+  stroke: 0.3pt + rgb(230,235,240)
 )

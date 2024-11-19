@@ -117,6 +117,7 @@ Third, you can also display figures in the margin.
 @fig-side-figure demonstrates this.
 You can adjust their location using the `dy` argument to `note()`. You can use any [Typst length](https://typst.app/docs/reference/layout/length/), inlcuding inches ("in") or centimeters ("cm"). This note is moved 1.2 inches down on the page.
 
+
 ::: {.note arguments="dy:-1.2in, numbered:false"}
 
 ::: {#fig-side-figure}
@@ -130,8 +131,10 @@ This is a little figure in the sidenotes.
 :::
 
 
+
 ## Other Formatting
 This template supports headings up to and including the third level. Levels below this are supported, but will use standard Quarto styling.
+
 
 Text is displayed with a modest lightness (`luma(30)`) to reduce the harshness of the contrast between the type and the paper; links are displayed underline like  <www.example.com>.
 
@@ -145,3 +148,72 @@ Thank you to Edward Tufte for inspiring this template, and to other Typst contri
 #### [christopherkenny](https://github.com/christopherkenny)'s thanks
 
 Thank you to nogula for building the Typst template from which this Quarto template is built.
+
+# Introduction
+
+This is an example document showcasing the 'Ilm Typst template for Quarto. It demonstrates various features including headings, paragraphs, lists, tables, figures, and citations
+
+## Paragraphs and Text Formatting
+
+This is a regular paragraph. You can use *italics*, **bold**, or `code` inline.
+
+## Lists
+
+Here's an unordered list:
+
+- Item 1
+- Item 2
+- Item 3
+
+And an ordered list:
+
+1. First item
+2. Second item
+3. Third item
+
+## Tables
+
+| Column 1 | Column 2 | Column 3 |
+|----------|----------|----------|
+| A        | B        | C        |
+| D        | E        | F        |
+
+## Equations
+
+Here's an inline equation: $E = mc^2$
+
+And a display equation:
+
+$$
+\frac{\partial f}{\partial x} = \lim_{h \to 0} \frac{f(x + h) - f(x)}{h}
+$$
+
+## Citations
+
+We use the standard pandoc citation syntax here.
+
+## External links
+
+'Ilm adds a small maroon circle to external (outgoing) links.
+
+Test link: [Quarto](https://quarto.org)
+
+# Unsupported Features
+
+- [ ] Blockquotes
+
+
+## Blockquotes
+
+Typst 'Ilm support a totally different style for blockquotes. This feature is not supported in Quarto now.
+
+Test blockquote:
+
+> This is a blockquote.
+
+We just suggest you to use the default Quarto blockquote style, or callout blocks for special notes.
+
+::: {.callout-note}
+Note that there are five types of callouts, including:
+`note`, `warning`, `important`, `tip`, and `caution`.
+:::
