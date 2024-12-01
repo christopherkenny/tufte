@@ -1,28 +1,22 @@
 #let wideblock(content) = block(width: 100% + 2.5in, content)
 
+
 #let colorize-first-chars(content, color) = {
   let text-str = to-string(content)
-  let words = text-str.split(" ")
-  let result = ()
 
-  for (i, word) in words.enumerate() {
-    if word.len() > 0 {
-      if i == 0 {  // 只处理第一个词
-        let first-char = word.at(0)
-        result += ([
-          #text(fill: color)[#first-char]#word.slice(1)
-        ],)
-      } else {
-        result += ([#word],)
-      }
+  if text-str.len() == 0 { return [] }
 
-      if i < words.len() - 1 {
-        result += ([ ],)
-      }
-    }
-  }
+  // 先尝试UTF-8编码长度
+  let bytes = bytes(text-str)
+  let first-len = if bytes.at(0) < 128 { 1 }
+    else if bytes.at(0) < 224 { 2 }
+    else if bytes.at(0) < 240 { 3 }
+    else { 4 }
 
-  result.join()
+  let first = text-str.slice(0, first-len)
+  let rest = text-str.slice(first-len)
+
+  [#text(fill: color)[#first]#rest]
 }
 
 #let tufte(
@@ -52,9 +46,18 @@
   footer-content: none,
   distribution: none,
   external-link-circle: true,
-  theme-color: rgb("#962323"),
+  theme-color: rgb("#1B255A"),
   doc,
 ) = {
+  set document(title: title)
+
+  // 2. 基础段落和块级元素设置
+  set block(spacing: 1.1em)  // 增加段落间距
+  set par(
+    leading: 1.0em,        // 增加行距
+    justify: true,
+    first-line-indent: 1em
+  )
 
   // Document metadata
   if authors != none {
@@ -84,15 +87,64 @@
     fill: luma(50)
   )
 
-  show figure.where(kind: table): set figure.caption(position: top)
-  show figure.where(kind: table): set figure(numbering: "I")
+
+  set table(
+    stroke: none,  // 先移除所有线条
+    align: center,
+    inset: 6pt
+  )
+
+  // 添加三线表样式
+  show table: it => {
+    set text(11pt)  // 设置表格文字大小
+    grid(
+      rows: (auto),
+      grid.hline(),  // 顶线
+      it,  // 表格内容
+      grid.hline()   // 底线
+    )
+  }
+
+  // 表头样式，添加下边线
+  show table.header: it => {
+    set text(weight: "bold")  // 表头文字加粗
+    style(styles => {
+      grid(
+        columns: 1,
+        it,
+        grid.hline()  // 表头下方线
+      )
+    })
+  }
+
   show figure.where(kind: "quarto-float-tbl"): set figure.caption(position: top)
   show figure.where(kind: "quarto-float-tbl"): set figure(numbering: "I")
+  // 修改表格标题样式
+  show figure.where(kind: table): set figure.caption(
+    position: top     // 标题位于表格上方
+  )
 
+  // 设置表格标题的文本样式和对齐方式
+  show figure.where(kind: table): set figure.caption(
+    position: top     // 标题位于表格上方
+  )
+
+  // 设置所有表格标题的对齐和样式
+  show figure.caption: it => {
+    set align(center)  // 居中对齐
+    set text(
+      font: sansfont,
+      size: 8.5pt,
+      style: "italic",
+      fill: luma(50)
+    )
+    it
+  }
   show figure.where(kind: image): set figure(
     supplement: [Fig.],
     numbering: "1",
   )
+
   show figure.where(kind: "quarto-float-fig"): set figure(
     supplement: [Figure],
     numbering: "1",
@@ -100,11 +152,6 @@
 
   show figure.where(kind: raw): set figure.caption(position: top)
   show figure.where(kind: raw): set figure(supplement: [Code], numbering: "1")
-  show figure.where(kind: table): set table(
-    align: center,
-    stroke: 0.4pt + rgb(200,200,200),
-    inset: (x: 10pt, y: 8pt)
-  )
 
   show raw: set text(
     font: codefont,
@@ -141,51 +188,48 @@
   // Headings
   show heading: set text()
   show heading.where(level: 1): it => {
-    set par(first-line-indent: 0pt)  // 移除首行缩进
     block(
-      width: 100%,    // 确保完整宽度
+      width: 100%,
       {
-        v(2em, weak: true)
+        v(1.5em)       // 标题前间距
         text(
           size: 16pt,
           weight: "bold",
           tracking: 0.6pt,
           font: sansfont
         )[#colorize-first-chars(it, theme-color)]
-        v(1em, weak: true)
+        v(1em)       // 标题后间距
       }
     )
   }
 
   show heading.where(level: 2): it => {
-    set par(first-line-indent: 0pt)
     block(
       width: 100%,
       {
-        v(1.2em, weak: true)
+        v(1.2em)
         text(
           size: 14pt,
           weight: "medium",
           style: "italic",
           tracking: 0.3pt
         )[#colorize-first-chars(it, theme-color)]
-        v(0.8em, weak: true)
+        v(0.8em)
       }
     )
   }
 
   show heading.where(level: 3): it => {
-    set par(first-line-indent: 0pt)
     block(
       width: 100%,
       {
-        v(0.8em, weak: true)
+        v(0.8em)
         text(
           size: 11pt,
           style: "italic",
-          weight: "thin"
+          weight: "medium"
         )[#colorize-first-chars(it, theme-color)]
-        v(0.5em, weak: true)
+        v(0.5em)
       }
     )
   }
@@ -247,14 +291,6 @@
       )
     }
   )
-
-  set par(
-    leading: 0.7em,
-    justify: true,
-    first-line-indent: 1em
-  )
-  show par: set block(spacing: 0.6em)
-
 
 
   // frontmatter
@@ -376,13 +412,6 @@
 
   show cite.where(form: "prose"): notecite
 
-
-
   doc
 
 }
-
-#set table(
-  inset: 5pt,
-  stroke: 0.3pt + rgb(230,235,240)
-)

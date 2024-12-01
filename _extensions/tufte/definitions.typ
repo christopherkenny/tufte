@@ -207,24 +207,48 @@ Takes 2 optional keyword and 1 required argument:
   - `content: content` The content of the note.
 */
 #let notecounter = counter("notecounter")
-#let note(dy: -2em, numbered: true, content) = {
+#let note(dy: -2em, numbered: true, theme-color: rgb("#1B255A"), content) = {
   if numbered {
     notecounter.step()
-    text(weight: "bold", super(notecounter.display()))
+    // 正文标记
+    h(2pt)
+    text(
+      fill: theme-color,
+      weight: "regular",
+      {
+        notecounter.display()
+        h(1pt)
+        super(
+          box(
+            height: 3.5pt,  // 增加高度
+            circle(radius: 0.9pt, stroke: 0.6pt + theme-color)
+          )
+        )
+      }
+    )
+    h(2pt)
   }
+
+  // 侧边栏部分
   text(
     size: 9pt,
     font: sansfont,
     margin-note(
       if numbered {
         text(
-          weight: "bold",
-          font: "Lucida Bright",
-          size: 11pt,
+          size: 9pt,
+          fill: theme-color,
           {
-            super(notecounter.display())
-            text(size: 9pt, " ")
-          },
+            super(
+              box(
+                height: 3pt,
+                circle(radius: 0.9pt, stroke: 0.6pt + theme-color)
+              )
+            )
+            h(1pt)
+            notecounter.display()+"."
+            h(1pt)
+          }
         )
         content
       } else {
@@ -234,7 +258,6 @@ Takes 2 optional keyword and 1 required argument:
     ),
   )
 }
-
 /* Sidenote citation
 Display a short citation in the right margin with the `notecite()` function.
 Takes 2 optional keyword and 1 required argument.

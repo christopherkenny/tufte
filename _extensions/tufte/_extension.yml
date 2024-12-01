@@ -23,7 +23,7 @@ contributes:
         bottom: 1.5in
       # _extension.yml
       mainfont:
-        - Harding Text Web      # 更优雅的衬线字体
+        - Harding Text Web     # 更优雅的衬线字体
         - Palatino
         - New Computer Modern
       sansfont:
