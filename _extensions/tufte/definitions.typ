@@ -1,4 +1,4 @@
-#import "@preview/drafting:0.2.0": *
+#import "@preview/drafting:0.2.2": *
 
 #let to-string(content) = {
   if content.has("text") {
@@ -207,7 +207,7 @@ Takes 2 optional keyword and 1 required argument:
   - `content: content` The content of the note.
 */
 #let notecounter = counter("notecounter")
-#let note(dy: -2em, numbered: true, content) = {
+#let note(dy: -2em, numbered: true, content) = context {
   if numbered {
     notecounter.step()
     text(weight: "bold", super(notecounter.display()))
