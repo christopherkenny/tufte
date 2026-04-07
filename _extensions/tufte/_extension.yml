@@ -31,3 +31,4 @@ contributes:
         - Gill Sans MT
         - TeX Gyre Heros
         - Noto Sans
+      syntax-highlighting: idiomatic
